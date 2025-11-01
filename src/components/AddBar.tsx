@@ -1,0 +1,48 @@
+import { useEffect, useRef, useState } from 'react';
+import cn from 'classnames';
+
+type Props = {
+  activeTodosCount: number;
+  createTodo: (title: string, clearTitle: () => void) => void;
+  isCreating: boolean;
+};
+
+export const AddBar = ({ activeTodosCount, createTodo, isCreating }: Props) => {
+  const [title, setTitle] = useState<string>('');
+
+  const mainField = useRef<HTMLInputElement>(null);
+  const clearInput = () => setTitle('');
+
+  useEffect(() => {
+    mainField.current?.focus();
+  }, [isCreating]);
+
+  const handleSubmit = () => {
+    createTodo(title, clearInput);
+  };
+
+  return (
+    <header className="todoapp__header">
+      <button
+        type="button"
+        className={cn('todoapp__toggle-all', {
+          active: activeTodosCount === 0,
+        })}
+        data-cy="ToggleAllButton"
+      />
+
+      <form onSubmit={handleSubmit}>
+        <input
+          data-cy="NewTodoField"
+          type="text"
+          className="todoapp__new-todo"
+          placeholder="What needs to be done?"
+          disabled={isCreating}
+          value={title}
+          onChange={e => setTitle(e.target.value)}
+          ref={mainField}
+        />
+      </form>
+    </header>
+  );
+};
