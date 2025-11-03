@@ -17,6 +17,7 @@ export const TodoFilter = ({
   deleteAllCompleteTodos,
 }: Props) => {
   const allFilterArr = Object.values(FilterBy);
+  const completeTodoLength = hasCompleteTodosId.length;
 
   return (
     <footer className="todoapp__footer" data-cy="Footer">
@@ -24,7 +25,6 @@ export const TodoFilter = ({
         {activeTodosCount} items left
       </span>
 
-      {/* Active link should have the 'selected' class */}
       <nav className="filter" data-cy="Filter">
         {allFilterArr.map(filterName => (
           <a
@@ -45,7 +45,7 @@ export const TodoFilter = ({
         type="button"
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
-        disabled={hasCompleteTodosId.length === 0}
+        disabled={completeTodoLength === 0}
         onClick={deleteAllCompleteTodos}
       >
         Clear completed

@@ -67,7 +67,6 @@ export const TodosBar = ({ todos, tempTodo, delTodo, isDeleted }: Props) => {
           <button type="button" className="todo__remove" data-cy="TodoDelete">
             ×
           </button>
-          {/* 'is-active' class puts this modal on top of the todo */}
           <div data-cy="TodoLoader" className="modal overlay is-active">
             <div className="modal-background has-background-white-ter" />
             <div className="loader" />

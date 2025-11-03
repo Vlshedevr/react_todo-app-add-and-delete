@@ -24,7 +24,10 @@ export const App: React.FC = () => {
   const [isCreating, setIsCreating] = useState<boolean>(false);
   const [isDeleted, setIsDeleted] = useState<Set<number | number[]>>(new Set());
 
-  const activeTodosCount = todos.filter(todo => !todo.completed).length;
+  const activeTodosCount = todos.reduce(
+    (count, todo) => count + Number(!todo.completed),
+    0,
+  );
   const hasCompleteTodosId = todos
     .filter(todo => todo.completed)
     .map(comleteTodo => comleteTodo.id);
@@ -139,13 +142,16 @@ export const App: React.FC = () => {
 
     Promise.all(deleteTodos).then(results => {
       const successIds = results.filter(r => r.success).map(r => r.id);
-      const failedIds = results.filter(r => !r.success).map(r => r.id);
+      const failedCount = results.reduce(
+        (count, todoRes) => count + Number(!todoRes.success),
+        0,
+      );
 
       if (successIds.length > 0) {
         setTodos(curr => curr.filter(todo => !successIds.includes(todo.id)));
       }
 
-      if (failedIds.length > 0) {
+      if (failedCount > 0) {
         setErrorMessage(TypeErrMes.UnableDelete);
       }
 
@@ -190,7 +196,7 @@ export const App: React.FC = () => {
           isDeleted={isDeleted}
         />
 
-        {todos.length !== 0 && (
+        {todos.length > 0 && (
           <TodoFilter
             hasCompleteTodosId={hasCompleteTodosId}
             activeTodosCount={activeTodosCount}
