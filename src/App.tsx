@@ -1,6 +1,12 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { TodosBar } from './components/TodosBar';
 import { TodoFilter } from './components/TodoFilter';
 import { ErrorMessage } from './components/ErrorMessage';
@@ -22,6 +28,8 @@ export const App: React.FC = () => {
   const hasCompleteTodosId = todos
     .filter(todo => todo.completed)
     .map(comleteTodo => comleteTodo.id);
+
+  const mainField = useRef<HTMLInputElement>(null);
 
   const createTempTodo = (title: string) => {
     const TempTodo: Todo = {
@@ -57,7 +65,9 @@ export const App: React.FC = () => {
           setErrorMessage(TypeErrMes.UnableAdd);
           setTempTodo(null);
         })
-        .finally(() => setIsCreating(false));
+        .finally(() => {
+          setIsCreating(false);
+        });
     } else {
       setErrorMessage(TypeErrMes.TitleNotBeEmpty);
     }
@@ -121,23 +131,21 @@ export const App: React.FC = () => {
       return newSet;
     });
 
-    const successId: number[] = [];
-    const failedId: number[] = [];
-
     const deleteTodos = idToDelete.map(todoId =>
-      delTodo(todoId)
-        .then(() => successId.push(todoId))
-        .catch(() => failedId.push(todoId)),
+      deleteTodo(todoId)
+        .then(() => ({ id: todoId, success: true }))
+        .catch(() => ({ id: todoId, success: false })),
     );
 
-    Promise.all(deleteTodos).finally(() => {
-      if (successId.length > 0) {
-        setTodos(curr =>
-          curr.filter(oldTodo => !successId.includes(oldTodo.id)),
-        );
+    Promise.all(deleteTodos).then(results => {
+      const successIds = results.filter(r => r.success).map(r => r.id);
+      const failedIds = results.filter(r => !r.success).map(r => r.id);
+
+      if (successIds.length > 0) {
+        setTodos(curr => curr.filter(todo => !successIds.includes(todo.id)));
       }
 
-      if (failedId.length > 0) {
+      if (failedIds.length > 0) {
         setErrorMessage(TypeErrMes.UnableDelete);
       }
 
@@ -159,6 +167,10 @@ export const App: React.FC = () => {
       .catch(() => setErrorMessage(TypeErrMes.UnableLoad));
   }, []);
 
+  useEffect(() => {
+    mainField.current?.focus();
+  }, [isDeleted, isCreating]);
+
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
@@ -168,6 +180,7 @@ export const App: React.FC = () => {
           createTodo={createTodo}
           activeTodosCount={activeTodosCount}
           isCreating={isCreating}
+          mainField={mainField}
         />
 
         <TodosBar

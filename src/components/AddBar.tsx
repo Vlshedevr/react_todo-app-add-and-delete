@@ -1,21 +1,22 @@
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import cn from 'classnames';
 
 type Props = {
   activeTodosCount: number;
   createTodo: (title: string, clearTitle: () => void) => void;
   isCreating: boolean;
+  mainField: React.RefObject<HTMLInputElement>;
 };
 
-export const AddBar = ({ activeTodosCount, createTodo, isCreating }: Props) => {
+export const AddBar = ({
+  activeTodosCount,
+  createTodo,
+  isCreating,
+  mainField,
+}: Props) => {
   const [title, setTitle] = useState<string>('');
 
-  const mainField = useRef<HTMLInputElement>(null);
   const clearInput = () => setTitle('');
-
-  useEffect(() => {
-    mainField.current?.focus();
-  }, [isCreating]);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
