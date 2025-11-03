@@ -38,21 +38,6 @@ export const App: React.FC = () => {
     setTodos(currTodos => [...currTodos, newTodo]);
   };
 
-  const onDeleteErrorMessage = useCallback(() => {
-    setErrorMessage(null);
-  }, []);
-
-  const filtertTodos = useMemo<Todo[]>(() => {
-    switch (filter) {
-      case FilterBy.All:
-        return todos;
-      case FilterBy.Active:
-        return todos.filter(todo => !todo.completed);
-      case FilterBy.Completed:
-        return todos.filter(todo => todo.completed);
-    }
-  }, [filter, todos]);
-
   const createTodo = (title: string, clearTitle: () => void) => {
     setErrorMessage(null);
     const parseTitle = title.trim();
@@ -69,7 +54,7 @@ export const App: React.FC = () => {
           addNewTodo(addTodo);
         })
         .catch(() => {
-          setErrorMessage(TypeErrMes.UnableLoad);
+          setErrorMessage(TypeErrMes.UnableAdd);
           setTempTodo(null);
         })
         .finally(() => setIsCreating(false));
@@ -77,6 +62,21 @@ export const App: React.FC = () => {
       setErrorMessage(TypeErrMes.TitleNotBeEmpty);
     }
   };
+
+  const onDeleteErrorMessage = useCallback(() => {
+    setErrorMessage(null);
+  }, []);
+
+  const filtertTodos = useMemo<Todo[]>(() => {
+    switch (filter) {
+      case FilterBy.All:
+        return todos;
+      case FilterBy.Active:
+        return todos.filter(todo => !todo.completed);
+      case FilterBy.Completed:
+        return todos.filter(todo => todo.completed);
+    }
+  }, [filter, todos]);
 
   const delTodo = (todoId: number) => {
     setErrorMessage(null);
@@ -165,8 +165,8 @@ export const App: React.FC = () => {
 
       <div className="todoapp__content">
         <AddBar
-          activeTodosCount={activeTodosCount}
           createTodo={createTodo}
+          activeTodosCount={activeTodosCount}
           isCreating={isCreating}
         />
 

@@ -17,7 +17,9 @@ export const AddBar = ({ activeTodosCount, createTodo, isCreating }: Props) => {
     mainField.current?.focus();
   }, [isCreating]);
 
-  const handleSubmit = () => {
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
     createTodo(title, clearInput);
   };
 
